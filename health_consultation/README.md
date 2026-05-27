@@ -75,7 +75,7 @@ A comprehensive Django-based web application for online health consultation serv
 ## Technology Stack
 
 - **Backend**: Python Django 4.2+
-- **Database**: SQLite (default), PostgreSQL/MySQL compatible
+- **Database**: Supabase PostgreSQL only (`DATABASE_URL` required)
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 - **Authentication**: Django built-in authentication
 - **Real-time**: Django Channels (WebSocket)
@@ -134,7 +134,7 @@ health_consultation/
 │       ├── main.js              # Core functionality
 │       └── animations.js        # Animation effects
 ├── media/                       # User uploads
-├── db.sqlite3                   # SQLite database
+├── db.sqlite3                   # Legacy local file (not used after Supabase-only config)
 └── manage.py                    # Django management
 ```
 
@@ -230,6 +230,28 @@ health_consultation/
 8. **Access the application**
    - Open browser: `http://127.0.0.1:8000/`
    - Admin panel: `http://127.0.0.1:8000/admin/`
+
+## Supabase Database Setup
+
+1. Create a Supabase project and open:
+   - `Project Settings` -> `Database`
+2. Copy your connection string and set it as environment variable:
+   ```powershell
+   # Windows PowerShell
+   $env:DATABASE_URL="postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres"
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run migrations against Supabase:
+   ```bash
+   python manage.py migrate
+   ```
+
+Notes:
+- `DATABASE_URL` is mandatory. The app will not start without it.
+- For production, use your real Supabase connection string from the dashboard.
 
 ## Usage
 

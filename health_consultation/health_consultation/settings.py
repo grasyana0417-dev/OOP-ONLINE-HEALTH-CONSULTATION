@@ -7,6 +7,7 @@ Silay City, Negros Occidental, Philippines
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,9 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-barangay-guimbala-health-consultation-secret-key-2024'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if host.strip()
+]
 
 
 # Application definition
@@ -79,11 +84,20 @@ ASGI_APPLICATION = 'health_consultation.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres.tjcbxhrppvxhutcpuoey:%2B6Wm%23%2A%23i%26H%2B7XXC@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres",
+)
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is required. Configure your Supabase Postgres URL.")
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 
