@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Consultation Call Room - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="call-page">
+    <div class="container">
+        <div class="call-header panel">
+            <div>
+                <div class="call-status-row">
+                    <span class="call-status pulse-active"></span>
+                    <strong>{{ consultation.get_status_display }} {{ consultation.get_consultation_type_display }}</strong>
+                </div>
+                <h1>{{ appointment.get_consultation_type_display }}</h1>
+                <p>{{ appointment.resident.get_full_name }} with {{ appointment.health_worker.get_full_name }}</p>
+            </div>
+            <a href="{% url 'chat:consultation_chat' appointment.pk %}" class="btn btn-outline">Open Chat</a>
+        </div>
+
+        <div class="call-layout">
+            <div class="video-stage">
+                <div class="video-tile main-tile">
+                    <div class="avatar-large">{{ appointment.resident.first_name|first|default:"R" }}</div>
+                    <span>{{ appointment.resident.get_full_name }}</span>
+                </div>
+                <div class="video-tile small-tile">
+                    <div class="avatar-large worker">{{ appointment.health_worker.first_name|first|default:"H" }}</div>
+                    <span>{{ appointment.health_worker.get_full_name }}</span>
+                </div>
+            </div>
+            <aside class="panel call-side">
+                <h2>Consultation Controls</h2>
+                <p class="room-code">{{ room_id }}</p>
+                <p>This interface records join, leave, and end-call events through Django views.</p>
+                <div class="call-controls">
+                    <button class="control-button" data-toggle-label="Unmute">Mute</button>
+                    <button class="control-button" data-toggle-label="Camera On">Camera Off</button>
+                    <a href="{% url 'chat:consultation_chat' appointment.pk %}" class="control-button secondary">Open Chat</a>
+                    <button class="control-button danger" id="leaveCallBtn">{% if request.user.is_health_worker %}End Call{% else %}Leave Call{% endif %}</button>
+                </div>
+                {% if request.user.is_health_worker %}
+                <a href="{% url 'appointments:complete' appointment.pk %}" class="btn btn-primary btn-block">Add Consultation Notes</a>
+                {% endif %}
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-toggle-label]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const current = button.textContent;
+        button.textContent = button.dataset.toggleLabel;
+        button.dataset.toggleLabel = current;
+        button.classList.toggle('active');
+    });
+});
+
+fetch("{% url 'consultations:join_call' consultation.pk %}", {
+    method: 'POST',
+    headers: {'X-CSRFToken': '{{ csrf_token }}'}
+});
+
+document.getElementById('leaveCallBtn').addEventListener('click', async () => {
+    const url = "{% if request.user.is_health_worker %}{% url 'consultations:end_call' consultation.pk %}{% else %}{% url 'consultations:leave_call' consultation.pk %}{% endif %}";
+    await fetch(url, {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}});
+    window.location.href = "{% url 'appointments:detail' appointment.pk %}";
+});
+</script>
+{% endblock %}

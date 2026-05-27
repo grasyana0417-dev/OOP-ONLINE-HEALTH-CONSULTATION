@@ -1,0 +1,38 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Resident Chats - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading">
+            <h1>Resident Chats</h1>
+            <p>Reply to resident messages and continue chat consultations.</p>
+        </div>
+        <div class="panel">
+            <div class="chat-room-list">
+                {% for room in chat_rooms %}
+                <a href="{% url 'chat:conversation' room.pk %}" class="chat-room-card hover-lift">
+                    <div class="avatar-circle">{{ room.resident.first_name|first|default:"R" }}</div>
+                    <div>
+                        <strong>{{ room.resident.get_full_name }}</strong>
+                        <p>{% if room.last_message %}{{ room.last_message.content|truncatechars:90 }}{% else %}No messages yet{% endif %}</p>
+                        <small>{{ room.get_room_type_display }}{% if room.appointment %} &middot; {{ room.appointment.get_consultation_type_display }}{% endif %}</small>
+                    </div>
+                    {% if room.unread_count %}
+                    <span class="message-badge notification-badge">{{ room.unread_count }}</span>
+                    {% endif %}
+                </a>
+                {% empty %}
+                <div class="empty-state">
+                    <div class="empty-icon">&#128172;</div>
+                    <h3>No active resident chats</h3>
+                    <p>New resident messages and chat consultations will appear here.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

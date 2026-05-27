@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms of Service - Barangay Guimbala-on Health Consultation{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container narrow">
+        <div class="panel">
+            <a href="{% url 'accounts:register' %}" class="icon-back-btn" aria-label="Go back"
+               onclick="if (window.history.length > 1) { event.preventDefault(); window.history.back(); }">←</a>
+            <h1>Terms of Service</h1>
+            <p>By using this system, you agree to provide accurate information, keep your account credentials secure, and use the platform only for legitimate health consultation purposes.</p>
+            <p>Consultation records are for coordination and continuity of care and should not be altered, misused, or shared without proper authorization.</p>
+            <p>The Barangay Health Office may update these terms when needed to maintain service quality, security, and compliance with local policies.</p>
+        </div>
+    </div>
+</section>
+<style>
+    .icon-back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin-bottom: 10px;
+        border: 1px solid var(--border-medium);
+        border-radius: 999px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1;
+    }
+</style>
+{% endblock %}

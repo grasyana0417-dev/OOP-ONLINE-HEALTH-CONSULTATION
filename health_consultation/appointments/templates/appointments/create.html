@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container form-container">
+        <div class="page-heading">
+            <h1>Book Appointment</h1>
+            <p>Select a date, time, consultation type, and method. Requests are reviewed by the Barangay Health Worker/Midwife.</p>
+        </div>
+        <form method="post" class="panel form-panel">
+            {% csrf_token %}
+            <div class="form-grid">
+                {% for field in form %}
+                {% if field.name != 'consultation_method' %}
+                <div class="form-group {% if field.name == 'reason_for_visit' or field.name == 'symptoms' or field.name == 'custom_consultation_type' %}full-span{% endif %}" {% if field.name == 'custom_consultation_type' %}id="custom-consultation-group"{% endif %}>
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label class="form-label">Consultation Method</label>
+                <input type="text" class="form-control" value="Online Video Call" readonly>
+            </div>
+            {% if form.non_field_errors %}
+            <div class="alert alert-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="helper-card">
+                <strong>Available Health Worker/Midwife Accounts</strong>
+                <p id="available-workers-list">
+                    {% for worker in available_workers %}
+                        {{ worker.get_full_name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        No on-duty account is currently marked available. Your request can still be reviewed by an administrator after a worker account is added.
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+                <a href="{% url 'accounts:resident_dashboard' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const workerInput = document.getElementById('id_health_worker');
+    const typeSelect = document.getElementById('id_consultation_type');
+    const customGroup = document.getElementById('custom-consultation-group');
+    const customInput = document.getElementById('id_custom_consultation_type');
+    const dateInput = document.getElementById('id_scheduled_date');
+    const timeInput = document.getElementById('id_scheduled_time');
+    const workersOutput = document.getElementById('available-workers-list');
+
+    if (!typeSelect || !customGroup || !customInput) return;
+
+    const toggleCustomType = () => {
+        const show = typeSelect.value === 'other';
+        customGroup.style.display = show ? '' : 'none';
+        customInput.required = show;
+        if (!show) customInput.value = '';
+    };
+
+    toggleCustomType();
+    typeSelect.addEventListener('change', toggleCustomType);
+
+    const syncWorkerFirstFlow = () => {
+        if (!workerInput || !dateInput || !timeInput) return;
+        const workerSelected = !!workerInput.value;
+        dateInput.disabled = !workerSelected;
+        timeInput.disabled = !workerSelected;
+        if (!workerSelected && workersOutput) {
+            workersOutput.textContent = 'Choose a health worker first.';
+        }
+    };
+
+    const updateWorkers = async () => {
+        if (!workerInput || !dateInput || !timeInput || !workersOutput) return;
+        const workerId = workerInput.value;
+        const date = dateInput.value;
+        const time = timeInput.value;
+        if (!workerId) {
+            workersOutput.textContent = 'Choose a health worker first.';
+            return;
+        }
+        if (!date || !time) {
+            workersOutput.textContent = 'Select date and time to check selected worker availability.';
+            return;
+        }
+        try {
+            const url = `{% url 'appointments:available_workers' %}?date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}&worker_id=${encodeURIComponent(workerId)}`;
+            const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!res.ok) {
+                workersOutput.textContent = 'Unable to check availability.';
+                return;
+            }
+            const data = await res.json();
+            if (data.selected_available === false) {
+                workersOutput.textContent = 'Selected health worker is NOT available at this time.';
+                return;
+            }
+            if (data.selected_available === true) {
+                workersOutput.textContent = 'Selected health worker is available for this 1-hour slot.';
+                return;
+            }
+            workersOutput.textContent = 'Select date and time to check selected worker availability.';
+        } catch (err) {
+            workersOutput.textContent = 'Unable to check availability.';
+        }
+    };
+
+    if (workerInput) workerInput.addEventListener('change', () => {
+        syncWorkerFirstFlow();
+        updateWorkers();
+    });
+    if (dateInput) dateInput.addEventListener('change', updateWorkers);
+    if (timeInput) timeInput.addEventListener('change', updateWorkers);
+    syncWorkerFirstFlow();
+    updateWorkers();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}User Detail - Barangay Guimbala-on{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading split">
+            <div>
+                <h1>{{ viewed_user.get_full_name }}</h1>
+                <p>{{ viewed_user.get_role_display }} &middot; {{ viewed_user.email }}</p>
+            </div>
+            <form method="post" action="{% url 'accounts:user_activate' viewed_user.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn {% if viewed_user.is_active %}btn-outline{% else %}btn-primary{% endif %}">
+                    {% if viewed_user.is_active %}Deactivate{% else %}Activate{% endif %}
+                </button>
+            </form>
+        </div>
+
+        <div class="content-grid two-columns">
+            <article class="panel">
+                <h2>Account Details</h2>
+                <div class="detail-list">
+                    <div><span>Contact</span><strong>{{ viewed_user.phone_number|default:"Not provided" }}</strong></div>
+                    <div><span>Address</span><strong>{{ viewed_user.address|default:"Not provided" }}</strong></div>
+                    <div><span>Date joined</span><strong>{{ viewed_user.date_joined|date:"M d, Y" }}</strong></div>
+                    <div><span>Status</span><strong>{% if viewed_user.is_active %}Active{% else %}Inactive{% endif %}</strong></div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <h2>Recent Appointments</h2>
+                <div class="appointment-stack">
+                    {% for appointment in appointments %}
+                    <div class="appointment-card status-left-{{ appointment.status }}">
+                        <div>
+                            <span class="status-badge status-{{ appointment.status }}">{{ appointment.get_status_display }}</span>
+                            <h3>{{ appointment.get_consultation_type_display }}</h3>
+                            <p>{{ appointment.scheduled_date|date:"M d, Y" }} at {{ appointment.scheduled_time|time:"g:i A" }}</p>
+                        </div>
+                        <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-outline btn-sm">Open</a>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state compact"><h3>No appointment history</h3></div>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+

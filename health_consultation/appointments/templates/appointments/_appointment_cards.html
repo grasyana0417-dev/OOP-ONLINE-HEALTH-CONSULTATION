@@ -1,0 +1,39 @@
+﻿<div class="appointment-list stagger-children">
+    {% for appointment in page_obj %}
+    <article class="appointment-card status-left-{{ appointment.status }}">
+        <div class="appointment-main">
+            <div class="appointment-meta">
+                <span class="status-badge status-{{ appointment.status }}">{{ appointment.get_status_display }}</span>
+                <span>{{ appointment.get_consultation_method_display }}</span>
+            </div>
+            <h2>{{ appointment.get_consultation_type_display }}</h2>
+            <p>{{ appointment.scheduled_date|date:"F d, Y" }} at {{ appointment.scheduled_time|time:"g:i A" }}</p>
+            <p class="muted">
+                {% if request.user.is_resident %}
+                    Health Worker/Midwife: {% if appointment.health_worker %}{{ appointment.health_worker.get_full_name }}{% else %}Pending assignment{% endif %}
+                {% else %}
+                    Resident: {{ appointment.resident.get_full_name }}
+                {% endif %}
+            </p>
+            <p>{{ appointment.reason_for_visit|truncatechars:120 }}</p>
+        </div>
+        <div class="card-actions">
+            <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-outline btn-sm">View Details</a>
+            {% if request.user.is_health_worker and appointment.status == 'pending' %}
+            <a href="{% url 'appointments:approve' appointment.pk %}" class="btn btn-primary btn-sm">Approve</a>
+            {% endif %}
+            {% if appointment.status == 'approved' and appointment.is_online_consultation %}
+            <a href="{% url 'appointments:join_consultation' appointment.pk %}" class="btn btn-primary btn-sm">Join</a>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128197;</div>
+        <h3>No appointments found</h3>
+        <p>Try adjusting filters or book a new appointment.</p>
+    </div>
+    {% endfor %}
+</div>
+{% include 'appointments/_pagination.html' %}
+

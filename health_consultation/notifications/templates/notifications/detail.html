@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Notification - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container form-container">
+        <article class="panel notification-detail">
+            <span class="status-badge {% if notification.is_read %}status-completed{% else %}status-pending{% endif %}">
+                {% if notification.is_read %}Read{% else %}Unread{% endif %}
+            </span>
+            <h1>{{ notification.title }}</h1>
+            <p>{{ notification.message|linebreaks }}</p>
+            <small>{{ notification.created_at|date:"F d, Y" }} at {{ notification.time_display }}</small>
+            <div class="form-actions">
+                {% if notification.link %}
+                <a href="{{ notification.link }}" class="btn btn-primary">Open Related Page</a>
+                {% endif %}
+                <a href="{% url 'notifications:list' %}" class="btn btn-outline">Back to Notifications</a>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

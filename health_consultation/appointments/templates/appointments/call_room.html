@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}Online Consultation Call - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="call-page">
+    <div class="container">
+        <div class="call-header panel">
+            <div>
+                <div class="call-status-row"><span class="call-status pulse-active"></span><strong>Active online consultation</strong></div>
+                <h1>{{ appointment.get_consultation_type_display }}</h1>
+                <p>{{ appointment.resident.get_full_name }} with {% if appointment.health_worker %}{{ appointment.health_worker.get_full_name }}{% else %}Health Worker/Midwife{% endif %}</p>
+            </div>
+            <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-outline">Appointment Details</a>
+        </div>
+        <div class="call-layout">
+            <div class="video-stage">
+                <div id="jitsi-container" class="jitsi-container" aria-label="Video call room"></div>
+                <div id="call-fallback" class="call-fallback" hidden>
+                    <div class="video-tile main-tile">
+                        <div class="avatar-large">{{ appointment.resident.first_name|first|default:"R" }}</div>
+                        <span>Resident</span>
+                    </div>
+                    <div class="video-tile small-tile">
+                        <div class="avatar-large worker">{{ appointment.health_worker.first_name|first|default:"H" }}</div>
+                        <span>Health Worker/Midwife</span>
+                    </div>
+                </div>
+            </div>
+            <aside class="panel call-side">
+                <h2>Room ID</h2>
+                <p class="room-code">{{ call_room_id }}</p>
+                <p id="call-hint">
+                    {% if is_initiator %}
+                        You are the host for this consultation. Start the call and the resident can join.
+                    {% else %}
+                        Waiting for the health worker to start the call.
+                    {% endif %}
+                </p>
+                <div class="call-controls">
+                    <button class="control-button" data-call-audio {% if not is_initiator and not call_started %}disabled{% endif %}>Mute</button>
+                    <button class="control-button" data-call-video {% if not is_initiator and not call_started %}disabled{% endif %}>Camera Off</button>
+                    <button class="control-button danger" data-end-call>End Call</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://{{ jitsi_domain }}/external_api.js"></script>
+<script>
+(() => {
+    const csrfToken = '{{ csrf_token }}';
+    const callDetailUrl = "{% url 'appointments:detail' appointment.pk %}";
+    const startCallUrl = "{% url 'appointments:start_call' appointment.pk %}";
+    const endCallUrl = "{% url 'appointments:end_call' appointment.pk %}";
+    const roomName = "{{ call_room_id|escapejs }}";
+    const jitsiDomain = "{{ jitsi_domain|default:'meet.jit.si'|escapejs }}";
+    const jitsiAppId = "{{ jitsi_app_id|default:''|escapejs }}";
+    const jitsiJwt = "{{ jitsi_jwt|default:''|escapejs }}";
+    const displayName = "{{ request.user.get_full_name|default:request.user.email|escapejs }}";
+    const userEmail = "{{ request.user.email|default:''|escapejs }}";
+    const isInitiator = {{ is_initiator|yesno:"true,false" }};
+    const callStarted = {{ call_started|yesno:"true,false" }};
+    const statusUrl = "{% url 'appointments:call_status' appointment.pk %}";
+    const container = document.getElementById('jitsi-container');
+    const fallback = document.getElementById('call-fallback');
+    const callHint = document.getElementById('call-hint');
+    const audioBtn = document.querySelector('[data-call-audio]');
+    const videoBtn = document.querySelector('[data-call-video]');
+    const endBtn = document.querySelector('[data-end-call]');
+    let api = null;
+    let isAudioMuted = false;
+    let isVideoMuted = false;
+
+    const postEvent = async (url) => {
+        try {
+            await fetch(url, {
+                method: 'POST',
+                headers: {'X-CSRFToken': csrfToken}
+            });
+        } catch (err) {
+            console.warn('Call event failed:', err);
+        }
+    };
+
+    const updateAudioButton = () => {
+        if (!audioBtn) return;
+        audioBtn.textContent = isAudioMuted ? 'Unmute' : 'Mute';
+        audioBtn.classList.toggle('active', isAudioMuted);
+    };
+
+    const updateVideoButton = () => {
+        if (!videoBtn) return;
+        videoBtn.textContent = isVideoMuted ? 'Camera On' : 'Camera Off';
+        videoBtn.classList.toggle('active', isVideoMuted);
+    };
+
+    const showFallback = () => {
+        if (container) container.style.display = 'none';
+        if (fallback) fallback.hidden = false;
+    };
+
+    const setControlsEnabled = (enabled) => {
+        if (audioBtn) audioBtn.disabled = !enabled;
+        if (videoBtn) videoBtn.disabled = !enabled;
+    };
+
+    const initJitsi = () => {
+        if (typeof window.JitsiMeetExternalAPI !== 'function' || !container) {
+            showFallback();
+            return;
+        }
+
+        const roomPath = jitsiAppId ? `${jitsiAppId}/${roomName}` : `guimbala-${roomName}`;
+        const options = {
+            roomName: roomPath,
+            width: '100%',
+            height: '100%',
+            parentNode: container,
+            userInfo: {
+                displayName: displayName,
+                email: userEmail
+            },
+            configOverwrite: {
+                prejoinPageEnabled: false,
+                startWithAudioMuted: false,
+                startWithVideoMuted: false,
+                disableSelfView: false,
+                startWithTileView: false,
+                selfViewMode: 'video',
+                // Newer Jitsi config key for toolbar control.
+                toolbarButtons: ['microphone', 'camera', 'hangup', 'fullscreen'],
+                // Prevent captions/extra features from showing quick action buttons.
+                transcription: { enabled: false },
+                breakoutRooms: { hideAddRoomButton: true },
+                iAmRecorder: false,
+                // 1:1 consultation - disable all chat/private messaging UI paths.
+                disableChat: true,
+                disablePrivateMessages: true,
+                disableRemoteMute: true,
+                participantMenuButtonsWithNotifyClick: [
+                    'privateMessage',
+                    'mute',
+                    'mute-video',
+                    'ask-unmute'
+                ],
+                remoteVideoMenu: {
+                    disablePrivateChat: true,
+                    disableKick: true,
+                    disableGrantModerator: true
+                }
+            },
+            interfaceConfigOverwrite: {
+                TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'fullscreen'],
+                SHOW_JITSI_WATERMARK: false,
+                VERTICAL_FILMSTRIP: false
+            }
+        };
+
+        if (jitsiJwt) {
+            options.jwt = jitsiJwt;
+        }
+
+        api = new window.JitsiMeetExternalAPI(jitsiDomain, options);
+
+        api.addEventListener('videoConferenceJoined', async () => {
+            if (isInitiator) {
+                await postEvent(startCallUrl);
+            }
+            try {
+                // Hide Jitsi participant strip; we keep our own movable self-view.
+                api.executeCommand('toggleFilmStrip');
+            } catch (err) {
+                console.warn('Unable to hide filmstrip:', err);
+            }
+            setControlsEnabled(true);
+        });
+
+        api.addEventListener('readyToClose', async () => {
+            await postEvent(endCallUrl);
+            window.location.href = callDetailUrl;
+        });
+    };
+
+    if (audioBtn) {
+        audioBtn.addEventListener('click', () => {
+            if (!api) return;
+            api.executeCommand('toggleAudio');
+            isAudioMuted = !isAudioMuted;
+            updateAudioButton();
+        });
+    }
+
+    if (videoBtn) {
+        videoBtn.addEventListener('click', () => {
+            if (!api) return;
+            api.executeCommand('toggleVideo');
+            isVideoMuted = !isVideoMuted;
+            updateVideoButton();
+        });
+    }
+
+    if (endBtn) {
+        endBtn.addEventListener('click', async () => {
+            await postEvent(endCallUrl);
+            if (api) {
+                api.executeCommand('hangup');
+                api.dispose();
+            }
+            window.location.href = callDetailUrl;
+        });
+    }
+
+    updateAudioButton();
+    updateVideoButton();
+
+    if (isInitiator || callStarted) {
+        if (callHint) {
+            callHint.textContent = isInitiator
+                ? 'You are the host for this consultation.'
+                : 'The health worker started the call. You can now join.';
+        }
+        initJitsi();
+    } else {
+        setControlsEnabled(false);
+        if (callHint) {
+            callHint.textContent = 'Waiting for the health worker to start the call.';
+        }
+        const poll = setInterval(async () => {
+            try {
+                const res = await fetch(statusUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.started) {
+                    clearInterval(poll);
+                    window.location.reload();
+                }
+            } catch (e) {
+                clearInterval(poll);
+            }
+        }, 10000);
+    }
+
+})();
+</script>
+<style>
+    .video-stage {
+        position: relative;
+    }
+
+    .self-preview {
+        position: absolute;
+        right: 14px;
+        bottom: 14px;
+        width: 200px;
+        max-width: 42%;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #111;
+        z-index: 20;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+    }
+
+    .self-preview-handle {
+        cursor: move;
+        user-select: none;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.7);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .self-preview video {
+        display: block;
+        width: 100%;
+        height: 130px;
+        object-fit: cover;
+        background: #000;
+    }
+
+    /* Fallback: keep Jitsi thumbnails hidden (local + remote strip). */
+    #jitsi-container #filmstripRemoteVideosContainer,
+    #jitsi-container #remoteVideos,
+    #jitsi-container .filmstrip {
+        display: none !important;
+        visibility: hidden !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Notification Preferences - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container form-container wide">
+        <div class="page-heading">
+            <h1>Notification Preferences</h1>
+            <p>Choose which appointment, chat, and system updates you want to receive.</p>
+        </div>
+        <form method="post" class="panel form-panel">
+            {% csrf_token %}
+            <div class="preference-grid">
+                {% for field in form %}
+                <label class="preference-card">
+                    {{ field }}
+                    <span>
+                        <strong>{{ field.label }}</strong>
+                        <small>Enabled notifications help you avoid missed consultations.</small>
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Preferences</button>
+                <a href="{% url 'notifications:list' %}" class="btn btn-outline">Back</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

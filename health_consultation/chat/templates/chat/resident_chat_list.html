@@ -1,0 +1,68 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Messages - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading">
+            <h1>Real-Time Chat</h1>
+            <p>Chat securely with a Barangay Health Worker/Midwife for consultation support.</p>
+        </div>
+
+        <div class="content-grid two-columns">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Conversations</h2>
+                        <p>Your active consultation chats.</p>
+                    </div>
+                </div>
+                <div class="chat-room-list">
+                    {% for room in chat_rooms %}
+                    <a href="{% url 'chat:conversation' room.pk %}" class="chat-room-card hover-lift">
+                        <div class="avatar-circle">{{ room.health_worker.first_name|first|default:"H" }}</div>
+                        <div>
+                            <strong>{{ room.health_worker.get_full_name }}</strong>
+                            <p>{% if room.last_message %}{{ room.last_message.content|truncatechars:70 }}{% else %}No messages yet{% endif %}</p>
+                            <small>{{ room.get_room_type_display }}</small>
+                        </div>
+                        {% if room.unread_count %}
+                        <span class="message-badge notification-badge">{{ room.unread_count }}</span>
+                        {% endif %}
+                    </a>
+                    {% empty %}
+                    <div class="empty-state compact">
+                        <div class="empty-icon">&#128172;</div>
+                        <h3>No active chats</h3>
+                        <p>Start a chat with an available Barangay Health Worker/Midwife.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <aside class="panel">
+                <h2>Start New Chat</h2>
+                <p class="muted">Choose a Barangay Health Worker/Midwife account.</p>
+                <div class="chat-room-list">
+                    {% for worker in available_workers %}
+                    <a href="{% url 'chat:start_chat' worker.pk %}" class="chat-room-card compact hover-lift">
+                        <div class="avatar-circle worker">{{ worker.first_name|first|default:"H" }}</div>
+                        <div>
+                            <strong>{{ worker.get_full_name }}</strong>
+                            <p>{% if worker.is_available %}Available{% else %}Can receive messages{% endif %}</p>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="empty-state compact">
+                        <h3>No health worker accounts yet</h3>
+                        <p>An admin can create a Barangay Health Worker/Midwife account from Django admin.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

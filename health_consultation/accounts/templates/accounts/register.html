@@ -1,0 +1,148 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Barangay Guimbala-on Health Consultation{% endblock %}
+
+{% block body_class %}auth-page{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-card wide">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <img src="{% static 'images/auth-logo.png' %}" alt="Barangay Guimbala-on Logo">
+                </div>
+                <h1>Create Account</h1>
+                <p>Register as a resident to access health consultation services</p>
+            </div>
+            
+            <form method="post" class="auth-form register-form">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_first_name" class="form-label">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                        <div class="form-error">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_last_name" class="form-label">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                        <div class="form-error">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_email" class="form-label">Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="form-error">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_phone_number" class="form-label">Contact Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                        <div class="form-error">{{ form.phone_number.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_address" class="form-label">Address</label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                    <div class="form-error">{{ form.address.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_age" class="form-label">Age</label>
+                        {{ form.age }}
+                        {% if form.age.errors %}
+                        <div class="form-error">{{ form.age.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_password1" class="form-label">Password</label>
+                        <div class="password-input-wrapper">
+                            {{ form.password1 }}
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}
+                        <div class="form-error">{{ form.password1.errors.0 }}</div>
+                        {% endif %}
+                        <div class="password-help">
+                            <small>Password must be at least 8 characters with letters and numbers</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_password2" class="form-label">Confirm Password</label>
+                        <div class="password-input-wrapper">
+                            {{ form.password2 }}
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}
+                        <div class="form-error">{{ form.password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label terms-label">
+                        <input type="checkbox" name="terms" required class="form-checkbox">
+                        <span>I agree to the <a href="{% url 'terms' %}" target="_blank" rel="noopener">Terms of Service</a> and <a href="{% url 'privacy' %}" target="_blank" rel="noopener">Privacy Policy</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    Create Account
+                    <span class="btn-arrow">&#8594;</span>
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{% url 'accounts:resident_login' %}">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function togglePassword(btn) {
+    const wrapper = btn.parentElement;
+    const input = wrapper.querySelector('input');
+    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    btn.classList.toggle('active');
+}
+</script>
+{% endblock %}
+
+
+
+
+

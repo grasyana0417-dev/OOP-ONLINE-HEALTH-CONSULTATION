@@ -1,0 +1,368 @@
+/*
+ * Responsive Styles for Barangay Guimbala Health Consultation System
+ */
+
+/* Large screens */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+}
+
+/* Tablet landscape */
+@media (max-width: 1024px) {
+    .navbar-nav {
+        gap: 20px;
+    }
+    
+    .hero-section {
+        padding: 60px 0;
+    }
+    
+    .hero-title {
+        font-size: 42px;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .consultation-types-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+}
+
+/* Tablet portrait */
+@media (max-width: 768px) {
+    /* Navigation */
+    .desktop-nav {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .toggle-bar {
+        width: 24px;
+        height: 2px;
+        background: var(--primary);
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-white);
+        border-top: 1px solid var(--border-light);
+        box-shadow: var(--shadow-lg);
+        padding: 16px 24px;
+        z-index: 999;
+    }
+    
+    .mobile-nav.active {
+        display: block;
+    }
+    
+    .mobile-nav-link {
+        display: block;
+        padding: 12px 0;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-size: 16px;
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .mobile-nav-link:last-child {
+        border-bottom: none;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        padding: 40px 0 60px;
+        text-align: center;
+    }
+    
+    .hero-content {
+        max-width: 100%;
+    }
+    
+    .hero-title {
+        font-size: 32px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+    }
+    
+    .hero-image {
+        display: none;
+    }
+    
+    /* Features */
+    .features-section {
+        padding: 60px 0;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .feature-card {
+        padding: 24px;
+    }
+    
+    /* Consultation Types */
+    .consultation-types-section {
+        padding: 60px 0;
+    }
+    
+    .consultation-types-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* How It Works */
+    .how-it-works-section {
+        padding: 60px 0;
+    }
+    
+    .steps-container {
+        flex-direction: column;
+        gap: 32px;
+    }
+    
+    .step-item {
+        max-width: 300px;
+    }
+    
+    .step-connector {
+        display: none;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        padding: 60px 0;
+    }
+    
+    .cta-title {
+        font-size: 28px;
+    }
+    
+    .cta-actions {
+        flex-direction: column;
+    }
+    
+    /* Footer */
+    .footer {
+        padding: 48px 0 24px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+    }
+    
+    .footer-logo {
+        margin: 0 auto 16px;
+    }
+    
+    .footer-links {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .footer-column h5 {
+        margin-bottom: 12px;
+    }
+    
+    .contact-item {
+        justify-content: center;
+    }
+    
+    /* Auth Pages */
+    .auth-card {
+        padding: 32px 24px;
+    }
+    
+    .auth-card.wide {
+        max-width: 100%;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    /* Dashboard */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Chat */
+    .chat-layout {
+        flex-direction: column;
+    }
+    
+    .chat-sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+    }
+    
+    /* Appointments */
+    .appointment-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 16px;
+    }
+    
+    .navbar {
+        height: 64px;
+    }
+    
+    .navbar-spacer {
+        height: 64px;
+    }
+    
+    .logo-title {
+        font-size: 12px;
+    }
+    
+    .logo-subtitle {
+        font-size: 10px;
+    }
+    
+    .hero-title {
+        font-size: 28px;
+    }
+    
+    .hero-badge {
+        font-size: 12px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+    
+    .section-subtitle {
+        font-size: 16px;
+    }
+    
+    .btn-lg {
+        padding: 14px 24px;
+        font-size: 14px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-title {
+        font-size: 24px;
+    }
+    
+    .footer-bottom {
+        font-size: 12px;
+    }
+}
+
+/* Small mobile */
+@media (max-width: 360px) {
+    .hero-title {
+        font-size: 24px;
+    }
+    
+    .feature-title {
+        font-size: 18px;
+    }
+    
+    .section-title {
+        font-size: 22px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .footer,
+    .hero-section,
+    .cta-section,
+    .no-print {
+        display: none !important;
+    }
+    
+    .main-content {
+        padding: 0;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles can be added here */
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .btn-primary {
+        border: 2px solid currentColor;
+    }
+    
+    .form-control {
+        border: 2px solid var(--text-secondary);
+    }
+}

@@ -1,0 +1,111 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Chat with {{ other_user.get_full_name }} - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="chat-page">
+    <div class="container">
+        <div class="chat-shell">
+            <header class="chat-header">
+                <a href="{% url 'chat:list' %}" class="btn btn-outline btn-sm">Back</a>
+                <div class="chat-peer">
+                    <div class="avatar-circle {% if other_user.is_health_worker %}worker{% endif %}">{{ other_user.first_name|first|default:"U" }}</div>
+                    <div>
+                        <h1>{{ other_user.get_full_name }}</h1>
+                        <p>{% if other_user.is_health_worker %}Barangay Health Worker/Midwife{% else %}Resident{% endif %}</p>
+                    </div>
+                </div>
+                {% if appointment %}
+                <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-outline btn-sm">Appointment</a>
+                {% endif %}
+            </header>
+
+            <div id="chatMessages" class="chat-messages" aria-live="polite">
+                {% for chat_message in chat_messages %}
+                <div class="chat-bubble-row {% if chat_message.sender == request.user %}mine{% endif %}" data-message-id="{{ chat_message.pk }}">
+                    <div class="chat-bubble {% if chat_message.sender.is_health_worker %}worker-bubble{% else %}resident-bubble{% endif %} chat-message-enter">
+                        <p>{{ chat_message.content|linebreaksbr }}</p>
+                        {% if chat_message.attachment %}
+                        <a href="{{ chat_message.attachment.url }}" class="attachment-link" target="_blank">View attachment</a>
+                        {% endif %}
+                        <small>{{ chat_message.sender.get_full_name }} &middot; {{ chat_message.time_display }}</small>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state compact" id="emptyChatState">
+                    <div class="empty-icon">&#128172;</div>
+                    <h3>No messages yet</h3>
+                    <p>Send the first message to begin the consultation chat.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <form id="chatForm" class="chat-compose" method="post" action="{% url 'chat:send_message' %}">
+                {% csrf_token %}
+                <input type="hidden" name="room_id" value="{{ room.pk }}">
+                <textarea name="content" class="form-control" rows="2" placeholder="Type your message..." required></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const chatMessages = document.getElementById('chatMessages');
+const chatForm = document.getElementById('chatForm');
+const roomId = "{{ room.pk }}";
+const existingMessageNodes = chatMessages.querySelectorAll('[data-message-id]');
+let lastMessageId = Number(existingMessageNodes[existingMessageNodes.length - 1]?.dataset.messageId || 0);
+
+function scrollChatToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function appendMessage(message) {
+    document.getElementById('emptyChatState')?.remove();
+    if (document.querySelector(`[data-message-id="${message.id}"]`)) return;
+    const row = document.createElement('div');
+    row.className = `chat-bubble-row ${message.is_mine ? 'mine' : ''}`;
+    row.dataset.messageId = message.id;
+    const bubbleType = message.is_sender_health_worker ? 'worker-bubble' : 'resident-bubble';
+    row.innerHTML = `
+        <div class="chat-bubble ${bubbleType} chat-message-enter">
+            <p></p>
+            <small>${message.sender_name} &middot; ${message.time}</small>
+        </div>
+    `;
+    row.querySelector('p').textContent = message.content;
+    chatMessages.appendChild(row);
+    lastMessageId = Math.max(lastMessageId, Number(message.id));
+    scrollChatToBottom();
+}
+
+chatForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(chatForm);
+    const response = await fetch(chatForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: {'X-CSRFToken': chatForm.querySelector('[name=csrfmiddlewaretoken]').value}
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    data.message.is_mine = true;
+    appendMessage(data.message);
+    chatForm.reset();
+});
+
+async function pollMessages() {
+    const response = await fetch(`{% url 'chat:get_messages' room.pk %}?last_id=${lastMessageId}`);
+    if (!response.ok) return;
+    const data = await response.json();
+    data.messages.forEach(appendMessage);
+}
+
+scrollChatToBottom();
+setInterval(pollMessages, 4000);
+</script>
+{% endblock %}
+

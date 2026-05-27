@@ -1,0 +1,113 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Resident Dashboard - Barangay Guimbala-on Online Health Consultation{% endblock %}
+
+{% block content %}
+<section class="app-page page-transition">
+    <div class="container">
+        <div class="dashboard-header slide-up animated">
+            <div>
+                <p class="eyebrow-text">Resident Dashboard</p>
+                <h1>Good day, {{ user.first_name|default:user.get_full_name }}</h1>
+                <p>Manage appointments, chat consultations, and health records for Barangay Guimbala-on.</p>
+            </div>
+            <div class="dashboard-actions">
+                <a href="{% url 'appointments:create' %}" class="btn btn-primary">Book Appointment</a>
+                <a href="{% url 'chat:list' %}" class="btn btn-outline">Open Chat</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card dashboard-card">
+                <span class="stat-icon">+</span>
+                <strong>{{ upcoming_appointments|length }}</strong>
+                <span>Upcoming Appointments</span>
+            </div>
+            <div class="stat-card dashboard-card">
+                <span class="stat-icon">&#10003;</span>
+                <strong>{{ consultation_count }}</strong>
+                <span>Completed Consultations</span>
+            </div>
+            <div class="stat-card dashboard-card">
+                <span class="stat-icon notification-badge">!</span>
+                <strong>{{ unread_notifications }}</strong>
+                <span>Unread Notifications</span>
+            </div>
+        </div>
+
+        <div class="content-grid two-columns">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Upcoming Appointments</h2>
+                        <p>Your pending and approved consultation schedules.</p>
+                    </div>
+                    <a href="{% url 'appointments:list' %}" class="text-link">View all</a>
+                </div>
+                <div class="appointment-stack stagger-children">
+                    {% for appointment in upcoming_appointments %}
+                    <div class="appointment-card status-left-{{ appointment.status }}">
+                        <div>
+                            <span class="status-badge status-{{ appointment.status }}">{{ appointment.get_status_display }}</span>
+                            <h3>{{ appointment.get_consultation_type_display }}</h3>
+                            <p>{{ appointment.scheduled_date|date:"M d, Y" }} at {{ appointment.scheduled_time|time:"g:i A" }}</p>
+                            <small>{{ appointment.get_consultation_method_display }}</small>
+                        </div>
+                        <div class="card-actions">
+                            <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-outline btn-sm">Details</a>
+                            {% if appointment.status == 'approved' and appointment.is_online_consultation %}
+                                {% if appointment.call_started_at %}
+                                <span class="status-badge status-approved">Host started consultation</span>
+                                <a href="{% url 'appointments:join_consultation' appointment.pk %}" class="btn btn-primary btn-sm">Join Now</a>
+                                {% else %}
+                                <span class="status-badge status-pending">Waiting for host to start</span>
+                                <a href="{% url 'appointments:join_consultation' appointment.pk %}" class="btn btn-outline btn-sm">Open Waiting Room</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <div class="empty-icon">+</div>
+                        <h3>No upcoming appointments</h3>
+                        <p>Book a consultation with the Barangay Health Worker/Midwife.</p>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-primary">Book now</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Recent Chat Activity</h2>
+                        <p>Latest messages from your consultations.</p>
+                    </div>
+                    <a href="{% url 'chat:list' %}" class="text-link">Open messages</a>
+                </div>
+                <div class="message-preview-list">
+                    {% for message in recent_messages %}
+                    <div class="message-preview">
+                        <div class="avatar-circle">{{ message.sender.first_name|first|default:"H" }}</div>
+                        <div>
+                            <strong>{{ message.sender.get_full_name }}</strong>
+                            <p>{{ message.content|truncatechars:80 }}</p>
+                            <small>{{ message.created_at|date:"M d, Y" }} &middot; {{ message.time_display }}</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state compact">
+                        <div class="empty-icon">&#128172;</div>
+                        <h3>No chat messages yet</h3>
+                        <p>Start a chat after logging in or after an appointment is approved.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+

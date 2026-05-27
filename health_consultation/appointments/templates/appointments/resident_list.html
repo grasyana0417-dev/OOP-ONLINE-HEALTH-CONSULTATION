@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}My Appointments - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading split">
+            <div>
+                <h1>My Appointments</h1>
+                <p>Track pending, approved, completed, cancelled, and rescheduled consultations.</p>
+            </div>
+            <a href="{% url 'appointments:create' %}" class="btn btn-primary">Book Appointment</a>
+        </div>
+        {% include 'appointments/_filter_bar.html' %}
+        {% include 'appointments/_appointment_cards.html' %}
+    </div>
+</section>
+{% endblock %}

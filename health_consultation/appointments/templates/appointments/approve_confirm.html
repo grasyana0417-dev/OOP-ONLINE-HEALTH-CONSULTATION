@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Approve Appointment - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container form-container">
+        <div class="panel confirm-panel">
+            <h1>Approve Appointment?</h1>
+            <p>Approve {{ appointment.resident.get_full_name }}'s {{ appointment.get_consultation_type_display }} request for {{ appointment.scheduled_date|date:"F d, Y" }} at {{ appointment.scheduled_time|time:"g:i A" }}.</p>
+            <form method="post" class="form-actions">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Approve</button>
+                <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-outline">Back</a>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

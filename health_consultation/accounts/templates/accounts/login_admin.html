@@ -1,0 +1,100 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Login - Barangay Guimbala-on Health Consultation{% endblock %}
+
+{% block body_class %}auth-page auth-page--admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page--admin .auth-card { border-top: 4px solid #8b5cf6; }
+    .auth-page--admin .auth-icon { border-radius: 50%; box-shadow: 0 0 0 3px #8b5cf620; }
+    .auth-page--admin .btn-primary { background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-color: #8b5cf6; }
+    .auth-page--admin .btn-primary:hover { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+    .role-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: #ede9fe; color: #4c1d95; font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 999px; margin-bottom: 0.75rem; }
+    .role-badge svg { width: 14px; height: 14px; }
+    .login-switch { margin-top: 0.75rem; font-size: 0.85rem; color: #6b7280; }
+    .login-switch a { color: #8b5cf6; font-weight: 500; }
+    .admin-notice { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.82rem; color: #92400e; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .admin-notice svg { width: 16px; height: 16px; flex-shrink: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <img src="{% static 'images/auth-logo.png' %}" alt="Barangay Guimbala-on Logo">
+                </div>
+                <div class="role-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Administrator Portal
+                </div>
+                <h1>Admin Access</h1>
+                <p>Restricted to authorized system administrators only.</p>
+            </div>
+
+            <div class="admin-notice">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                This portal is for administrators only. Unauthorized access is prohibited.
+            </div>
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_username" class="form-label">Email Address</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="form-error">{{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password" class="form-label">Password</label>
+                    <div class="password-input-wrapper">
+                        {{ form.password }}
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                    <div class="form-error">{{ form.password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    Sign In as Administrator
+                    <span class="btn-arrow">&#8594;</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p class="login-switch">
+                    Not an admin?
+                    <a href="{% url 'accounts:resident_login' %}">Resident Login</a> &bull;
+                    <a href="{% url 'accounts:worker_login' %}">Health Worker Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function togglePassword(btn) {
+    const input = btn.previousElementSibling;
+    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    btn.classList.toggle('active');
+}
+</script>
+{% endblock %}
+
+
+
+

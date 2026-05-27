@@ -1,0 +1,30 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}My Profile - Barangay Guimbala-on{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container narrow">
+        <div class="page-heading">
+            <h1>My Profile</h1>
+            <p>Update your account information.</p>
+        </div>
+        <form method="post" enctype="multipart/form-data" class="panel form-panel">
+            {% csrf_token %}
+            {% for field in user_form %}
+            <div class="form-group">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Profile</button>
+                <a href="{% url 'accounts:change_password' %}" class="btn btn-outline">Change Password</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+

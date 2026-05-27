@@ -1,0 +1,101 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Health Worker Login - Barangay Guimbala-on Health Consultation{% endblock %}
+
+{% block body_class %}auth-page auth-page--worker{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page--worker .auth-card { border-top: 4px solid #3b82f6; }
+    .auth-page--worker .auth-icon { border-radius: 50%; box-shadow: 0 0 0 3px #3b82f620; }
+    .auth-page--worker .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); border-color: #3b82f6; }
+    .auth-page--worker .btn-primary:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .role-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: #dbeafe; color: #1e3a8a; font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 999px; margin-bottom: 0.75rem; }
+    .role-badge svg { width: 14px; height: 14px; }
+    .login-switch { margin-top: 0.75rem; font-size: 0.85rem; color: #6b7280; }
+    .login-switch a { color: #3b82f6; font-weight: 500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <img src="{% static 'images/auth-logo.png' %}" alt="Barangay Guimbala-on Logo">
+                </div>
+                <div class="role-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    Health Worker Portal
+                </div>
+                <h1>Welcome Back</h1>
+                <p>Sign in to your Barangay Health Worker / Midwife account to manage appointments and consultations.</p>
+            </div>
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_username" class="form-label">Email Address</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="form-error">{{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password" class="form-label">Password</label>
+                    <div class="password-input-wrapper">
+                        {{ form.password }}
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                    <div class="form-error">{{ form.password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember" class="form-checkbox">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    Sign In as Health Worker
+                    <span class="btn-arrow">&#8594;</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p class="login-switch">
+                    Looking for a different portal?
+                    <a href="{% url 'accounts:resident_login' %}">Resident Login</a> &bull;
+                    <a href="{% url 'accounts:admin_login' %}">Admin Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function togglePassword(btn) {
+    const input = btn.previousElementSibling;
+    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    btn.classList.toggle('active');
+}
+</script>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Privacy Policy - Barangay Guimbala-on Health Consultation{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container narrow">
+        <div class="panel">
+            <a href="{% url 'accounts:register' %}" class="icon-back-btn" aria-label="Go back"
+               onclick="if (window.history.length > 1) { event.preventDefault(); window.history.back(); }">←</a>
+            <h1>Privacy Policy</h1>
+            <p>This platform collects account details and consultation-related information needed to deliver barangay health services.</p>
+            <p>Personal data is handled with access controls and used only for consultation workflows, notifications, and authorized administrative functions.</p>
+            <p>You may request profile updates or corrections through authorized health office staff in accordance with applicable data privacy requirements.</p>
+        </div>
+    </div>
+</section>
+<style>
+    .icon-back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin-bottom: 10px;
+        border: 1px solid var(--border-medium);
+        border-radius: 999px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1;
+    }
+</style>
+{% endblock %}

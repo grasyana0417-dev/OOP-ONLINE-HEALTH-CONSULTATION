@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Appointments - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading split">
+            <div>
+                <h1>Appointment Requests</h1>
+                <p>Approve, reschedule, cancel, start calls, and complete consultation notes.</p>
+            </div>
+            <a href="{% url 'chat:list' %}" class="btn btn-outline">Resident Chats</a>
+        </div>
+        {% include 'appointments/_filter_bar.html' %}
+        {% include 'appointments/_appointment_cards.html' %}
+    </div>
+</section>
+{% endblock %}

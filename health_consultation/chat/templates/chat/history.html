@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat History - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container narrow">
+        <div class="page-heading split">
+            <div>
+                <h1>Chat History</h1>
+                <p>{{ message_count }} message{{ message_count|pluralize }} with {{ other_user.get_full_name }}.</p>
+            </div>
+            <a href="{% url 'chat:list' %}" class="btn btn-outline">Back to Chats</a>
+        </div>
+        <div class="panel chat-history-panel">
+            {% for chat_message in chat_messages %}
+            <div class="chat-bubble-row {% if chat_message.sender == request.user %}mine{% endif %}">
+                <div class="chat-bubble {% if chat_message.sender.is_health_worker %}worker-bubble{% else %}resident-bubble{% endif %}">
+                    <p>{{ chat_message.content|linebreaksbr }}</p>
+                    <small>{{ chat_message.sender.get_full_name }} · {{ chat_message.created_at|date:"M d, Y" }} {{ chat_message.time_display }}</small>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state compact">
+                <h3>No messages found</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

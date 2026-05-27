@@ -1,0 +1,35 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Consultation Records - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading">
+            <h1>Consultation Records</h1>
+            <p>Completed consultation history, notes, diagnosis, recommendations, and follow-up instructions.</p>
+        </div>
+        <div class="record-grid">
+            {% for record in records %}
+            <article class="record-card hover-lift">
+                <span class="status-badge status-completed">Completed</span>
+                <h2>{{ record.consultation_type|title }}</h2>
+                <p>{{ record.consultation_date|date:"F d, Y" }}</p>
+                <div class="detail-list compact-list">
+                    <div><span>Resident</span><strong>{{ record.resident.get_full_name }}</strong></div>
+                    <div><span>Health Worker/Midwife</span><strong>{{ record.health_worker.get_full_name }}</strong></div>
+                </div>
+                <a href="{% url 'appointments:record_detail' record.pk %}" class="btn btn-outline btn-sm">View Record</a>
+            </article>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">&#128203;</div>
+                <h3>No consultation records yet</h3>
+                <p>Records are created when a health worker marks a consultation as completed.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+

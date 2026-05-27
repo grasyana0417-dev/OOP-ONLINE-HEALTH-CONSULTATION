@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Appointment Detail - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading split">
+            <div>
+                <h1>{{ appointment.get_consultation_type_display }}</h1>
+                <p>{{ appointment.scheduled_date|date:"F d, Y" }} at {{ appointment.scheduled_time|time:"g:i A" }}</p>
+            </div>
+            <span class="status-badge status-{{ appointment.status }}">{{ appointment.get_status_display }}</span>
+        </div>
+
+        <div class="content-grid detail-layout">
+            <article class="panel">
+                <h2>Consultation Details</h2>
+                <div class="detail-list">
+                    <div><span>Resident</span><strong>{{ appointment.resident.get_full_name }}</strong></div>
+                    <div><span>Health Worker/Midwife</span><strong>{% if appointment.health_worker %}{{ appointment.health_worker.get_full_name }}{% else %}Pending assignment{% endif %}</strong></div>
+                    <div><span>Method</span><strong>{{ appointment.get_consultation_method_display }}</strong></div>
+                    <div><span>Duration</span><strong>{{ appointment.duration_minutes }} minutes</strong></div>
+                    <div><span>Created</span><strong>{{ appointment.created_at|date:"M d, Y" }}</strong></div>
+                </div>
+            </article>
+
+            <aside class="panel action-panel">
+                <h2>Actions</h2>
+                <div class="action-stack">
+                    {% if request.user.is_health_worker and appointment.status == 'pending' and appointment.health_worker == request.user %}
+                    <a href="{% url 'appointments:approve' appointment.pk %}" class="btn btn-primary">Approve Request</a>
+                    {% endif %}
+
+                    {% if request.user.is_resident and request.user == appointment.resident and appointment.status == 'approved' and appointment.is_online_consultation %}
+                    <a href="{% url 'appointments:join_consultation' appointment.pk %}" class="btn btn-primary">Join Consultation</a>
+                    {% endif %}
+                    {% if request.user.is_health_worker and request.user == appointment.health_worker and appointment.status == 'approved' and appointment.is_online_consultation %}
+                    <a href="{% url 'appointments:join_consultation' appointment.pk %}" class="btn btn-primary">Start Consultation</a>
+                    {% endif %}
+
+                    {% if appointment.consultation_method == 'chat' and appointment.status == 'approved' and request.user == appointment.resident or appointment.consultation_method == 'chat' and appointment.status == 'approved' and request.user == appointment.health_worker %}
+                    <a href="{% url 'chat:consultation_chat' appointment.pk %}" class="btn btn-outline">Open Chat</a>
+                    {% endif %}
+
+                    {% if can_reschedule and request.user == appointment.resident or can_reschedule and request.user == appointment.health_worker %}
+                    <a href="{% url 'appointments:reschedule' appointment.pk %}" class="btn btn-outline">Reschedule</a>
+                    {% endif %}
+
+                    {% if can_cancel and request.user == appointment.resident or can_cancel and request.user == appointment.health_worker %}
+                    <a href="{% url 'appointments:cancel' appointment.pk %}" class="btn btn-outline danger-outline">Cancel</a>
+                    {% endif %}
+
+                    {% if request.user.is_health_worker and appointment.health_worker == request.user and appointment.status == 'approved' %}
+                    <a href="{% url 'appointments:complete' appointment.pk %}" class="btn btn-outline">Complete Notes</a>
+                    {% endif %}
+                </div>
+            </aside>
+        </div>
+
+        <div class="content-grid two-columns">
+            <article class="panel">
+                <h2>Reason for Visit</h2>
+                <p>{{ appointment.reason_for_visit|linebreaks }}</p>
+                {% if appointment.symptoms %}
+                <h3>Symptoms</h3>
+                <p>{{ appointment.symptoms|linebreaks }}</p>
+                {% endif %}
+            </article>
+            <article class="panel">
+                <h2>Consultation Notes</h2>
+                {% if appointment.consultation_notes or appointment.diagnosis or appointment.recommendations %}
+                <div class="record-notes">
+                    <h3>Notes</h3>
+                    <p>{{ appointment.consultation_notes|default:"No notes recorded."|linebreaks }}</p>
+                    <h3>Diagnosis</h3>
+                    <p>{{ appointment.diagnosis|default:"No diagnosis recorded."|linebreaks }}</p>
+                    <h3>Recommendations</h3>
+                    <p>{{ appointment.recommendations|default:"No recommendations recorded."|linebreaks }}</p>
+                </div>
+                {% else %}
+                <div class="empty-state compact">
+                    <h3>No consultation notes yet</h3>
+                    <p>Notes are added when the consultation is completed.</p>
+                </div>
+                {% endif %}
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}

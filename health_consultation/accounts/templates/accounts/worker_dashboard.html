@@ -1,0 +1,134 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Health Worker/Midwife Dashboard - Barangay Guimbala-on{% endblock %}
+
+{% block content %}
+<section class="app-page page-transition">
+    <div class="container">
+        <div class="dashboard-header slide-up animated">
+            <div>
+                <p class="eyebrow-text">Barangay Health Worker/Midwife</p>
+                <h1>Welcome, {{ user.get_full_name }}</h1>
+                <p>Review appointment requests, conduct online consultations, and support residents in real time.</p>
+            </div>
+            <div class="dashboard-actions">
+                <form method="post" action="{% url 'accounts:toggle_availability' %}" class="availability-form" data-availability-form>
+                    {% csrf_token %}
+                    <button type="submit" class="btn {% if user.is_available %}btn-primary{% else %}btn-outline{% endif %}">
+                        {% if user.is_available %}On Duty{% else %}Off Duty{% endif %}
+                    </button>
+                </form>
+                <a href="{% url 'appointments:list' %}" class="btn btn-outline">All Appointments</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card dashboard-card">
+                <span class="stat-icon">!</span>
+                <strong>{{ pending_appointments|length }}</strong>
+                <span>Pending Requests</span>
+            </div>
+            <div class="stat-card dashboard-card">
+                <span class="stat-icon">&#128197;</span>
+                <strong>{{ today_appointments|length }}</strong>
+                <span>Today's Consultations</span>
+            </div>
+            <div class="stat-card dashboard-card">
+                <span class="stat-icon">&#10003;</span>
+                <strong>{{ total_consultations }}</strong>
+                <span>Completed</span>
+            </div>
+            <div class="stat-card dashboard-card">
+                <span class="stat-icon notification-badge">&#128172;</span>
+                <strong>{{ unread_messages }}</strong>
+                <span>Unread Messages</span>
+            </div>
+        </div>
+
+        <div class="content-grid two-columns">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Appointment Requests</h2>
+                        <p>Accept, reschedule, or cancel resident requests.</p>
+                    </div>
+                </div>
+                <div class="appointment-stack">
+                    {% for appointment in pending_appointments %}
+                    <div class="appointment-card status-left-pending">
+                        <div>
+                            <span class="status-badge status-pending">Pending</span>
+                            <h3>{{ appointment.resident.get_full_name }}</h3>
+                            <p>{{ appointment.get_consultation_type_display }} &middot; {{ appointment.scheduled_date|date:"M d" }} at {{ appointment.scheduled_time|time:"g:i A" }}</p>
+                            <small>{{ appointment.reason_for_visit|truncatechars:90 }}</small>
+                        </div>
+                        <div class="card-actions">
+                            <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-outline btn-sm">Review</a>
+                            <a href="{% url 'appointments:approve' appointment.pk %}" class="btn btn-primary btn-sm">Approve</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state compact">
+                        <div class="empty-icon">&#10003;</div>
+                        <h3>No pending requests</h3>
+                        <p>New appointment requests will appear here.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Today's Schedule</h2>
+                        <p>Approved consultations for today.</p>
+                    </div>
+                    <a href="{% url 'chat:list' %}" class="text-link">Reply to chats</a>
+                </div>
+                <div class="appointment-stack">
+                    {% for appointment in today_appointments %}
+                    <div class="appointment-card status-left-approved">
+                        <div>
+                            <span class="status-badge status-approved">Approved</span>
+                            <h3>{{ appointment.get_consultation_type_display }}</h3>
+                            <p>{{ appointment.resident.get_full_name }} &middot; {{ appointment.scheduled_time|time:"g:i A" }}</p>
+                            <small>{{ appointment.get_consultation_method_display }}</small>
+                        </div>
+                        <div class="card-actions">
+                            {% if appointment.is_online_consultation %}
+                            <a href="{% url 'appointments:join_consultation' appointment.pk %}" class="btn btn-primary btn-sm">Start</a>
+                            {% endif %}
+                            <a href="{% url 'appointments:complete' appointment.pk %}" class="btn btn-outline btn-sm">Notes</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state compact">
+                        <div class="empty-icon">&#128197;</div>
+                        <h3>No approved consultations today</h3>
+                        <p>Approved appointments scheduled for today will appear here.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-availability-form]').forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value}
+        });
+        if (response.ok) window.location.reload();
+    });
+});
+</script>
+{% endblock %}
+
+
+

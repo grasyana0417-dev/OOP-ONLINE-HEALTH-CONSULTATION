@@ -1,0 +1,332 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Barangay Guimbala-on Online Health Consultation - Silay City{% endblock %}
+
+{% block body_class %}landing-page{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-background">
+        <div class="hero-pattern"></div>
+    </div>
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge slide-up">
+                <span class="badge-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 21V5a2 2 0 012-2h8v18H4zM14 9h6v12h-6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 7h2M8 11h2M8 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <span>Barangay Guimbala-on, Silay City</span>
+            </div>
+            
+            <h1 class="hero-title slide-up delay-1">
+                Barangay Guimbala-on<br>
+                <span class="highlight">Online Health Consultation</span>
+            </h1>
+            
+            <p class="hero-subtitle slide-up delay-2">
+                Book appointments, chat with a Barangay Health Worker/Midwife, 
+                and consult online from the comfort of your home.
+            </p>
+            
+            <div class="hero-actions slide-up delay-3">
+                <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg">
+                    <span class="btn-icon">+</span>
+                    Book Appointment
+                </a>
+                <a href="{% url 'chat:list' %}" class="btn btn-outline btn-lg">
+                    <span class="btn-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 13a7 7 0 01-7 7H7l-4 3V6a4 4 0 014-4h7a7 7 0 017 7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    Start Chat
+                </a>
+            </div>
+            
+            <div class="hero-stats slide-up delay-4">
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Health Support</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">Residents Served</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">A+</span>
+                    <span class="stat-label">Quality Care</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-image slide-in-right delay-2">
+            <div class="image-container">
+                <div class="health-illustration">
+                    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Health Worker Icon -->
+                        <circle cx="200" cy="120" r="60" fill="#1a5f4a" opacity="0.1"/>
+                        <circle cx="200" cy="120" r="50" fill="#1a5f4a" opacity="0.2"/>
+                        <circle cx="200" cy="120" r="40" fill="#2d7a5f"/>
+                        <!-- Body -->
+                        <rect x="160" y="170" width="80" height="100" rx="10" fill="#1a5f4a"/>
+                        <!-- Medical Cross -->
+                        <rect x="185" y="200" width="30" height="10" fill="white"/>
+                        <rect x="195" y="190" width="10" height="30" fill="white"/>
+                        <!-- Pulse -->
+                        <path d="M140 280 L160 280 L170 260 L180 300 L190 280 L210 280 L220 250 L230 280 L260 280" 
+                              stroke="#2d7a5f" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hero-scroll-indicator">
+        <div class="scroll-mouse">
+            <div class="scroll-wheel"></div>
+        </div>
+        <span>Scroll to explore</span>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="services">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag slide-up">Our Services</span>
+            <h2 class="section-title slide-up">How We Can Help You</h2>
+            <p class="section-subtitle slide-up">Access quality healthcare services from your Barangay Health Center</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card slide-up delay-1">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="12" width="48" height="40" rx="4" stroke="currentColor" stroke-width="2"/>
+                        <line x1="20" y1="24" x2="44" y2="24" stroke="currentColor" stroke-width="2"/>
+                        <line x1="20" y1="32" x2="36" y2="32" stroke="currentColor" stroke-width="2"/>
+                        <line x1="20" y1="40" x2="40" y2="40" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Online Appointment</h3>
+                <p class="feature-description">
+                    Book appointments with our Barangay Health Workers/Midwives 
+                    for various health services at your convenience.
+                </p>
+                <a href="{% url 'accounts:register' %}" class="feature-link">
+                    Book Now <span>&#8594;</span>
+                </a>
+            </div>
+            
+            <div class="feature-card slide-up delay-2">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="32" cy="24" r="12" stroke="currentColor" stroke-width="2"/>
+                        <path d="M16 56V48C16 40 24 36 32 36C40 36 48 40 48 48V56" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="32" cy="24" r="4" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Online Call</h3>
+                <p class="feature-description">
+                    Connect face-to-face with our health professionals through 
+                    secure video or voice calls from your home.
+                </p>
+                <a href="{% url 'accounts:register' %}" class="feature-link">
+                    Learn More <span>&#8594;</span>
+                </a>
+            </div>
+            
+            <div class="feature-card slide-up delay-3">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="48" height="48" rx="4" stroke="currentColor" stroke-width="2"/>
+                        <line x1="16" y1="20" x2="48" y2="20" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="24" cy="36" r="4" fill="currentColor"/>
+                        <circle cx="40" cy="36" r="4" fill="currentColor"/>
+                        <path d="M24 44C28 48 36 48 40 44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Real-Time Chat</h3>
+                <p class="feature-description">
+                    Get quick answers to your health questions through our 
+                    secure real-time messaging system.
+                </p>
+                <a href="{% url 'accounts:register' %}" class="feature-link">
+                    Start Chat <span>&#8594;</span>
+                </a>
+            </div>
+            
+            <div class="feature-card slide-up delay-4">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M32 8L40 24H56L44 36L48 52L32 42L16 52L20 36L8 24H24L32 8Z" 
+                              stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Expert Support</h3>
+                <p class="feature-description">
+                    Receive professional guidance from our trained Barangay 
+                    Health Workers and Midwives for your health needs.
+                </p>
+                <a href="{% url 'accounts:register' %}" class="feature-link">
+                    Meet Our Team <span>&#8594;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Consultation Types Section -->
+<section class="consultation-types-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag slide-up">Services</span>
+            <h2 class="section-title slide-up">Consultation Types</h2>
+            <p class="section-subtitle slide-up">We offer various health consultation services for our residents</p>
+        </div>
+        
+        <div class="consultation-types-grid">
+            <div class="consultation-type-card slide-up delay-1">
+                <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 11a5 5 0 0110 0v7H7v-7z" stroke="currentColor" stroke-width="2"/><path d="M12 3v4M9 5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <h4>Prenatal Care</h4>
+                <p>Regular checkups and guidance for expectant mothers</p>
+            </div>
+            
+            <div class="consultation-type-card slide-up delay-2">
+                <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="2"/><path d="M6 20a6 6 0 0112 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <h4>Child Health</h4>
+                <p>Monitoring and care for children's health and development</p>
+            </div>
+            
+            <div class="consultation-type-card slide-up delay-3">
+                <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="3" width="12" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 9h4v12h-4zM8 7h4M8 11h4M8 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <h4>General Health</h4>
+                <p>Consultation for various health concerns and conditions</p>
+            </div>
+            
+            <div class="consultation-type-card slide-up delay-4">
+                <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="8" r="3" stroke="currentColor" stroke-width="2"/><path d="M3 20a5 5 0 0110 0M11 20a5 5 0 0110 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <h4>Family Planning</h4>
+                <p>Guidance and counseling for family planning needs</p>
+            </div>
+            
+            <div class="consultation-type-card slide-up delay-1">
+                <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7V4h8v3M12 9v6M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <h4>Follow-up Checkup</h4>
+                <p>Continued care and monitoring for ongoing treatments</p>
+            </div>
+            
+            <div class="consultation-type-card slide-up delay-2">
+                <div class="type-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 3l7 7-8 8a5 5 0 01-7-7l8-8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 5l7 7" stroke="currentColor" stroke-width="2"/></svg></div>
+                <h4>Immunization</h4>
+                <p>Vaccination schedules and immunization records</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section" id="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag slide-up">Process</span>
+            <h2 class="section-title slide-up">How It Works</h2>
+            <p class="section-subtitle slide-up">Getting health consultation is easy in just a few steps</p>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step-item slide-up delay-1">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Create Account</h4>
+                    <p>Register with your details to access our health services</p>
+                </div>
+                <div class="step-connector"></div>
+            </div>
+            
+            <div class="step-item slide-up delay-2">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Book Appointment</h4>
+                    <p>Select your preferred date, time, and consultation type</p>
+                </div>
+                <div class="step-connector"></div>
+            </div>
+            
+            <div class="step-item slide-up delay-3">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Get Approved</h4>
+                    <p>Wait for confirmation from our health workers</p>
+                </div>
+                <div class="step-connector"></div>
+            </div>
+            
+            <div class="step-item slide-up delay-4">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Start Consultation</h4>
+                    <p>Connect online or chat with your assigned health worker</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content slide-up">
+            <h2 class="cta-title">Ready to Get Started?</h2>
+            <p class="cta-text">
+                Join hundreds of residents in Barangay Guimbala-on who trust us with their health needs. 
+                Register now and book your first appointment.
+            </p>
+            <div class="cta-actions">
+                <a href="{% url 'accounts:register' %}" class="btn btn-white btn-lg">
+                    Register Now
+                </a>
+                <a href="{% url 'accounts:resident_login' %}" class="btn btn-outline-white btn-lg">
+                    Already have an account? Login
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Landing page specific animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hero elements animation on load
+        const heroElements = document.querySelectorAll('.slide-up, .slide-in-right');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        heroElements.forEach(el => observer.observe(el));
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+

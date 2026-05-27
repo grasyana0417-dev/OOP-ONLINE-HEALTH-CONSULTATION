@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Consultation Feedback - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container form-container wide">
+        <div class="page-heading">
+            <h1>Consultation Feedback</h1>
+            <p>Your feedback helps Barangay Guimbala improve online health services.</p>
+        </div>
+        <form method="post" class="panel form-panel">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <div class="{% if field.field.widget.input_type == 'radio' %}rating-options{% endif %}">
+                    {{ field }}
+                </div>
+                {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                <a href="{% url 'accounts:resident_dashboard' %}" class="btn btn-outline">Skip</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

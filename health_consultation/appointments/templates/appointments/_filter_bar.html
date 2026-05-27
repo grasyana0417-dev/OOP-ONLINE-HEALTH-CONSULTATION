@@ -1,0 +1,10 @@
+<form method="get" class="filter-bar panel">
+    {% for field in filter_form %}
+    <div class="filter-field">
+        <label class="sr-only" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="{% url 'appointments:list' %}" class="btn btn-outline">Reset</a>
+</form>

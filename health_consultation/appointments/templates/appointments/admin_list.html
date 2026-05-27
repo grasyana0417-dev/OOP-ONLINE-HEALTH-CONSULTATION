@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}All Appointments - Barangay Guimbala{% endblock %}
+
+{% block content %}
+<section class="app-page">
+    <div class="container">
+        <div class="page-heading split">
+            <div>
+                <h1>All Appointments</h1>
+                <p>Administrative monitoring for Barangay Guimbala online health consultations.</p>
+            </div>
+            <a href="{% url 'appointments:consultation_records' %}" class="btn btn-primary">Consultation Records</a>
+        </div>
+        {% include 'appointments/_filter_bar.html' %}
+        <div class="panel">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Resident</th>
+                            <th>Health Worker/Midwife</th>
+                            <th>Type</th>
+                            <th>Method</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in page_obj %}
+                        <tr>
+                            <td>{{ appointment.resident.get_full_name }}</td>
+                            <td>{% if appointment.health_worker %}{{ appointment.health_worker.get_full_name }}{% else %}Unassigned{% endif %}</td>
+                            <td>{{ appointment.get_consultation_type_display }}</td>
+                            <td>{{ appointment.get_consultation_method_display }}</td>
+                            <td>{{ appointment.scheduled_date|date:"M d, Y" }} {{ appointment.scheduled_time|time:"g:i A" }}</td>
+                            <td><span class="status-badge status-{{ appointment.status }}">{{ appointment.get_status_display }}</span></td>
+                            <td><a href="{% url 'appointments:detail' appointment.pk %}" class="text-link">View</a></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7">No appointments found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% include 'appointments/_pagination.html' %}
+    </div>
+</section>
+{% endblock %}
