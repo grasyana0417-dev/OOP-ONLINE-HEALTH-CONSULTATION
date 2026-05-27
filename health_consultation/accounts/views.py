@@ -14,7 +14,7 @@ from chat.models import ChatMessage
 from notifications.models import Notification
 from .forms import (
     UserRegistrationForm, UserLoginForm, ProfileUpdateForm,
-    ResidentProfileForm, HealthWorkerProfileForm, PasswordUpdateForm
+    ResidentProfileForm, HealthWorkerProfileForm, PasswordUpdateForm, AdminUserCreateForm
 )
 
 
@@ -446,3 +446,21 @@ def user_activate_view(request, user_id):
         messages.success(request, f'User account {status} successfully.')
     
     return redirect('accounts:user_list')
+
+
+@login_required
+def admin_user_create_view(request):
+    """Create user accounts from custom admin portal."""
+    if not request.user.is_admin_user:
+        return redirect('accounts:dashboard_redirect')
+
+    if request.method == 'POST':
+        form = AdminUserCreateForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, f'Account created for {user.email}.')
+            return redirect('accounts:user_detail', user_id=user.id)
+    else:
+        form = AdminUserCreateForm()
+
+    return render(request, 'accounts/admin_user_create.html', {'form': form})

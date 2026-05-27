@@ -26,6 +26,7 @@ urlpatterns = [
     path('toggle-availability/', views.toggle_availability_view, name='toggle_availability'),
     
     # Admin
+    path('admin/users/create/', views.admin_user_create_view, name='user_create'),
     path('admin/users/', views.user_list_view, name='user_list'),
     path('admin/users/<int:user_id>/', views.user_detail_view, name='user_detail'),
     path('admin/users/<int:user_id>/activate/', views.user_activate_view, name='user_activate'),
