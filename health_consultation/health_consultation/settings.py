@@ -20,7 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-barangay-guimbala-health-consultation-secret-key-2024'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+# Default to True for local development; set DEBUG=False in production env.
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -142,7 +143,10 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if DEBUG:
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+else:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = '/media/'
@@ -182,8 +186,12 @@ MESSAGE_TAGS = {
 # For JaaS, set:
 # JITSI_DOMAIN=8x8.vc
 # JITSI_APP_ID=vpaas-magic-cookie-...
+# JITSI_KID=vpaas-magic-cookie-.../<key-id>
+# JITSI_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
 # Optional temporary token for testing:
 # JITSI_JWT=<jwt>
 JITSI_DOMAIN = os.getenv('JITSI_DOMAIN', 'meet.jit.si')
 JITSI_APP_ID = os.getenv('JITSI_APP_ID', '')
+JITSI_KID = os.getenv('JITSI_KID', '')
+JITSI_PRIVATE_KEY = os.getenv('JITSI_PRIVATE_KEY', '')
 JITSI_JWT = os.getenv('JITSI_JWT', '')

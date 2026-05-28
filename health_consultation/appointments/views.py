@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.core.paginator import Paginator
 from django.conf import settings
 import uuid
+import time
+import jwt
 from datetime import timedelta
 
 from accounts.models import User
@@ -19,6 +21,44 @@ from .forms import (
 )
 
 BOOKED_STATUSES = ['pending', 'approved']
+
+
+def build_jaas_jwt_for_user(user):
+    """Build a short-lived JaaS JWT for the current user."""
+    app_id = getattr(settings, 'JITSI_APP_ID', '').strip()
+    key_id = getattr(settings, 'JITSI_KID', '').strip()
+    private_key = getattr(settings, 'JITSI_PRIVATE_KEY', '').strip().replace('\\n', '\n')
+
+    if not app_id or not key_id or not private_key:
+        return ''
+
+    now = int(time.time())
+    exp = now + 15 * 60
+
+    payload = {
+        'aud': 'jitsi',
+        'iss': 'chat',
+        'sub': app_id,
+        'room': '*',
+        'iat': now,
+        'nbf': now - 5,
+        'exp': exp,
+        'context': {
+            'user': {
+                'id': str(getattr(user, 'id', '')),
+                'name': user.get_full_name() or user.email or user.username,
+                'email': user.email or '',
+                'moderator': bool(getattr(user, 'is_health_worker', False) or getattr(user, 'is_admin_user', False)),
+            }
+        },
+    }
+    headers = {
+        'kid': key_id,
+        'typ': 'JWT',
+        'alg': 'RS256',
+    }
+    token = jwt.encode(payload, private_key, algorithm='RS256', headers=headers)
+    return token
 
 
 def get_available_workers_for_slot(scheduled_date, scheduled_time):
@@ -393,7 +433,7 @@ def join_consultation_view(request, pk):
         'consultation_method': appointment.consultation_method,
         'jitsi_domain': getattr(settings, 'JITSI_DOMAIN', 'meet.jit.si'),
         'jitsi_app_id': getattr(settings, 'JITSI_APP_ID', ''),
-        'jitsi_jwt': getattr(settings, 'JITSI_JWT', ''),
+        'jitsi_jwt': build_jaas_jwt_for_user(request.user) or getattr(settings, 'JITSI_JWT', ''),
     }
     
     if appointment.consultation_method in ['video_call', 'voice_call']:

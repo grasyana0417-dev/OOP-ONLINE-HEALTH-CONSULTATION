@@ -5,3 +5,4 @@ psycopg[binary]>=3.2
 dj-database-url>=2.2
 gunicorn>=22.0
 whitenoise>=6.7
+PyJWT[crypto]>=2.8,<3
